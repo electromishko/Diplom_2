@@ -1,0 +1,1 @@
+{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZDEwYzk5OTg0MjcwMDAxYmU3OTY5MyIsImlhdCI6MTc3NTMwNzkyOSwiZXhwIjoxNzc1MzA5MTI5fQ.mayihywIUx3opOohZDP9xvcmW2ewEHDeXLWmxfDDLOM'}
