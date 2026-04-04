@@ -2,6 +2,7 @@ import pytest
 import requests
 import allure
 from data import Urls, ErrorMessages
+from test_data import UserTestData
 
 
 class TestCreateUser:
@@ -66,11 +67,7 @@ class TestCreateUser:
     @allure.title("Создание пользователя без обязательных полей")
     @allure.story("Управление пользователями")
     @allure.severity(allure.severity_level.NORMAL)
-    @pytest.mark.parametrize("user_data,missing_field", [
-        ({"email": None, "password": "test123", "name": "Test"}, "email"),
-        ({"email": "test@test.com", "password": None, "name": "Test"}, "password"),
-        ({"email": "test@test.com", "password": "test123", "name": None}, "name")
-    ])
+    @pytest.mark.parametrize("user_data,missing_field", UserTestData.INVALID_USER_DATA)
     def test_create_user_without_email_or_password_or_name(self, user_data, missing_field):
         with allure.step(f"Попытка создания пользователя без поля {missing_field}"):
             allure.attach(str(user_data), "User data", allure.attachment_type.JSON)

@@ -3,13 +3,8 @@ import time
 import string
 import random
 from data import Urls
-from faker import Faker
 import json
 import allure
-
-
-fake = Faker('en_US')
-
 
 def get_ingredients():
     response = requests.get(Urls.API_INGREDIENTS)
