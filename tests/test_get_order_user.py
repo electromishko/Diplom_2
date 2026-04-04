@@ -7,9 +7,14 @@ class TestGetOrderUser:
     @allure.title("Получение заказов авторизованного пользователя")
     @allure.story("Получение заказов")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_order_authorised_user(self, user_register, create_order_with_ingredients):
-        token = user_register["token"]
+    def test_get_order_authorised_user(self, auth_token, ingredients_list):
+        token = auth_token
         headers = {"Authorization": token}
+        
+        with allure.step("Создание заказа для теста"):
+            ingredients = {"ingredients": ingredients_list[:2]}
+            create_order_response = requests.post(Urls.API_ORDERS, json=ingredients, headers=headers)
+            assert create_order_response.status_code == 200
     
         with allure.step("Отправка запроса на получение заказов"):
             allure.attach(str(headers), "Headers", allure.attachment_type.TEXT)
@@ -23,11 +28,20 @@ class TestGetOrderUser:
             get_order_response_json = get_order_response.json()
             assert get_order_response_json["success"] is True
             assert "orders" in get_order_response_json
+            assert len(get_order_response_json["orders"]) > 0
 
     @allure.title("Получение заказов неавторизованного пользователя")
     @allure.story("Получение заказов")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_get_order_unauthorised_user(self, user_register, create_order_with_ingredients):
+    def test_get_order_unauthorised_user(self, auth_token, ingredients_list):
+        token = auth_token
+        headers = {"Authorization": token}
+        
+        with allure.step("Создание заказа для теста"):
+            ingredients = {"ingredients": ingredients_list[:2]}
+            create_order_response = requests.post(Urls.API_ORDERS, json=ingredients, headers=headers)
+            assert create_order_response.status_code == 200
+        
         with allure.step("Отправка запроса на получение заказов без авторизации"):
             get_order_response = requests.get(Urls.API_ORDERS)
     

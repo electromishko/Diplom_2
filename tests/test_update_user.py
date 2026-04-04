@@ -1,16 +1,15 @@
 import requests
 import allure
 from data import Urls, ErrorMessages
-from utils.api_helper import get_random_data_user
-from utils.api_helper import generate_random_name, generate_random_email, generate_random_password
+from utils.api_helper import get_random_data_user, generate_random_name, generate_random_email, generate_random_password
 
 
 class TestUpdateUser:
     @allure.title("Изменение всех данных пользователя с авторизацией")
     @allure.story("Изменение данных пользователя")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_update_user_all_date_with_authorise(self, user_register):
-        token = user_register["token"]
+    def test_update_user_all_date_with_authorise(self, auth_token):
+        token = auth_token
         new_email, new_password, new_name = get_random_data_user()
         new_user_data = {
             "email": new_email,
@@ -37,9 +36,9 @@ class TestUpdateUser:
     @allure.title("Изменение поля email с авторизацией")
     @allure.story("Изменение данных пользователя")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_update_user_email_with_authorise(self, user_register):
-        token = user_register["token"]
-        user_data = user_register["user_data"]
+    def test_update_user_email_with_authorise(self, auth_token, generate_user_data):
+        token = auth_token
+        original_user_data = generate_user_data
         new_email = generate_random_email()
         new_user_data = {"email": new_email}
         headers = {"Authorization": token}
@@ -57,14 +56,14 @@ class TestUpdateUser:
             update_user_response_json = update_user_response.json()
             assert update_user_response_json["success"] is True
             assert update_user_response_json["user"]["email"] == new_email
-            assert update_user_response_json["user"]["name"] == user_data["name"]
+            assert update_user_response_json["user"]["name"] == original_user_data["name"]
 
     @allure.title("Изменение поля name с авторизацией")
     @allure.story("Изменение данных пользователя")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_update_user_name_with_authorise(self, user_register):
-        token = user_register["token"]
-        user_data = user_register["user_data"]
+    def test_update_user_name_with_authorise(self, auth_token, generate_user_data):
+        token = auth_token
+        original_user_data = generate_user_data
         new_name = generate_random_name()
         new_user_data = {"name": new_name}
         headers = {"Authorization": token}
@@ -81,15 +80,15 @@ class TestUpdateUser:
         
             update_user_response_json = update_user_response.json()
             assert update_user_response_json["success"] is True
-            assert update_user_response_json["user"]["email"] == user_data["email"]
+            assert update_user_response_json["user"]["email"] == original_user_data["email"]
             assert update_user_response_json["user"]["name"] == new_name
 
     @allure.title("Изменение поля password с авторизацией")
     @allure.story("Изменение данных пользователя")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_update_user_password_with_authorise(self, user_register):
-        token = user_register["token"]
-        user_data = user_register["user_data"]
+    def test_update_user_password_with_authorise(self, auth_token, generate_user_data):
+        token = auth_token
+        original_user_data = generate_user_data
         new_password = generate_random_password()
         new_user_data = {"password": new_password}
         headers = {"Authorization": token}
@@ -106,13 +105,21 @@ class TestUpdateUser:
         
             update_user_response_json = update_user_response.json()
             assert update_user_response_json["success"] is True
-            assert update_user_response_json["user"]["email"] == user_data["email"]
-            assert update_user_response_json["user"]["name"] == user_data["name"]
+            assert update_user_response_json["user"]["email"] == original_user_data["email"]
+            assert update_user_response_json["user"]["name"] == original_user_data["name"]
+        
+        with allure.step("Проверка возможности входа с новым паролем"):
+            login_data = {
+                "email": original_user_data["email"],
+                "password": new_password
+            }
+            login_response = requests.post(Urls.API_LOGIN, json=login_data)
+            assert login_response.status_code == 200
 
     @allure.title("Изменение данных пользователя без авторизации")
     @allure.story("Изменение данных пользователя")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_update_user_without_authorise(self, user_register):
+    def test_update_user_without_authorise(self, generate_user_data):
         new_email, new_password, new_name = get_random_data_user()
         new_user_data = {
             "email": new_email,

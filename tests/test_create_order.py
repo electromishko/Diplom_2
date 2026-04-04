@@ -8,10 +8,11 @@ class TestCreateOrder:
     @allure.title("Создание заказа с авторизацией и ингредиентами")
     @allure.story("Создание заказа")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_order_with_ingredients_with_authorise(self, user_register, login_user):
-        token = user_register["token"]
+    def test_create_order_with_ingredients_with_authorise(self, auth_token, ingredients_list):
+
+        token = auth_token
         headers = {"Authorization": token}
-        ingredients = {"ingredients": get_ingredients()[:2]}
+        ingredients = {"ingredients": ingredients_list[:2]}
     
         with allure.step("Отправка запроса на создание заказа"):
             allure.attach(str(headers), "Headers", allure.attachment_type.TEXT)
@@ -32,8 +33,8 @@ class TestCreateOrder:
     @allure.title("Создание заказа с авторизацией без ингредиентов")
     @allure.story("Создание заказа")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_create_order_without_ingredients_with_authorise(self, user_register, login_user):
-        token = user_register["token"]
+    def test_create_order_without_ingredients_with_authorise(self, auth_token):
+        token = auth_token
         headers = {"Authorization": token}
     
         with allure.step("Отправка запроса на создание заказа без ингредиентов"):
@@ -52,8 +53,8 @@ class TestCreateOrder:
     @allure.title("Создание заказа без авторизации с ингредиентами")
     @allure.story("Создание заказа")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_create_order_with_ingredients_without_authorise(self, user_register, login_user):
-        ingredients = {"ingredients": get_ingredients()[:2]}
+    def test_create_order_with_ingredients_without_authorise(self, ingredients_list):
+        ingredients = {"ingredients": ingredients_list[:2]}
     
         with allure.step("Отправка запроса на создание заказа без авторизации"):
             allure.attach(str(ingredients), "Request body", allure.attachment_type.JSON)
@@ -73,7 +74,7 @@ class TestCreateOrder:
     @allure.title("Создание заказа без авторизации без ингредиентов")
     @allure.story("Создание заказа")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_create_order_without_ingredients_without_authorise(self, user_register, login_user):
+    def test_create_order_without_ingredients_without_authorise(self):
         with allure.step("Отправка запроса на создание заказа без авторизации и ингредиентов"):
             create_order_response = requests.post(Urls.API_ORDERS)
     
@@ -89,8 +90,8 @@ class TestCreateOrder:
     @allure.title("Создание заказа c неверным хешем ингредиентов")
     @allure.story("Создание заказа")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_create_order_with_wrong_id_ingredient(self, user_register, login_user):
-        token = user_register["token"]
+    def test_create_order_with_wrong_id_ingredient(self, auth_token):
+        token = auth_token
         headers = {"Authorization": token}
         ingredients = {"ingredients": get_list_invalid_ingredients()}
     
