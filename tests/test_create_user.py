@@ -10,8 +10,10 @@ class TestCreateUser:
     @allure.story("Управление пользователями")
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_user_unique_user(self, generate_user_data):
-        user_data = generate_user_data
-        create_response = requests.post(Urls.API_REGISTER, json=user_data)       
+        create_response = requests.post(Urls.API_REGISTER, json=generate_user_data)
+        token = create_response.json().get("accessToken")
+        headers = {"Authorization": token}
+        requests.delete(Urls.API_USER, headers=headers)
         assert create_response.status_code == 200
 
     @allure.title("Создание пользователя, который уже зарегистрирован")
